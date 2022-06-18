@@ -1,4 +1,4 @@
-import sys, math, os
+import sys, os
 from collections import namedtuple
 from enum import Enum
 
@@ -14,7 +14,14 @@ class CardType(Enum):
     BONUS = 8
     TECHNICAL_DEBT = 9
 
-Application = namedtuple('Application', ['id', 'card_needed'])
+Application = namedtuple('Application', \
+    ['id', 'training_needed', 'coding_needed', 'daily_routine_needed', 'task_prioritization_needed', \
+      'architecture_study_needed', 'continuous_delivery_needed', 'code_review_needed', 'refactoring_needed'])
+Card = namedtuple('Card', \
+    ['training_cards_count', 'coding_cards_count', 'daily_routine_cards_count', 'task_prioritization_cards_count', \
+     'architecture_study_cards_count', 'continuous_delivery_cards_count', 'code_review_cards_count', 'refactoring_cards_count', \
+     'bonus_cards_count', 'technical_debt_cards_count'])
+Player = namedtuple('Player', ['location', 'score', 'permanent_daily_routine_cards', 'permanent_architecture_study_cards'])
 
 # Complete the hackathon before your opponent by following the principles of Green IT
 def retrieve_applications():
@@ -29,7 +36,8 @@ def retrieve_applications():
         # continuous_delivery_needed: number of CONTINUOUS_DELIVERY skills needed to release this application
         # code_review_needed: number of CODE_REVIEW skills needed to release this application
         # refactoring_needed: number of REFACTORING skills needed to release this application
-        object_type, _id, training_needed, coding_needed, daily_routine_needed, task_prioritization_needed, architecture_study_needed, continuous_delivery_needed, code_review_needed, refactoring_needed = input().split()
+        object_type, _id, training_needed, coding_needed, daily_routine_needed, task_prioritization_needed, architecture_study_needed, \
+            continuous_delivery_needed, code_review_needed, refactoring_needed = input().split()
         _id = int(_id)
         id = _id
         training_needed = int(training_needed)
@@ -40,38 +48,18 @@ def retrieve_applications():
         continuous_delivery_needed = int(continuous_delivery_needed)
         code_review_needed = int(code_review_needed)
         refactoring_needed = int(refactoring_needed)
-        application = Application(_id, [id, training_needed, coding_needed, daily_routine_needed, task_prioritization_needed, architecture_study_needed, continuous_delivery_needed, code_review_needed, refactoring_needed])
+        application = Application(id, training_needed, coding_needed, daily_routine_needed, task_prioritization_needed, \
+            architecture_study_needed, continuous_delivery_needed, code_review_needed, refactoring_needed)
         applications.append(application)
     return applications
-def export_applications(applications):
-    path = f'applications.txt'
-    print(f'export_applications i   nto {os.path.abspath(path)} ...', file=sys.stderr)
-    # file = open(path, "w");
-    # for a in applications:
-    #     file.write(f'id={a.id}')
-    # file.close()
-def display_applications():
-    path = f'applications.txt'
-    print(f'display_applications from {os.path.abspath(path)} ...', file=sys.stderr)
-    # file = open(path);
-    # for line in file:
-    #     print(line, file=sys.stderr)
-    # file.close()  
-def run():
-    game_phase = input()  # can be MOVE, GIVE_CARD, THROW_CARD, PLAY_CARD or RELEASE
-    applications = retrieve_applications()
-    export_applications(applications)
-
-    # for i in range(2):
-        # player_location: id of the zone in which the player is located
-        # player_permanent_daily_routine_cards: number of DAILY_ROUTINE the player has played. It allows them to take cards from the adjacent zones
-        # player_permanent_architecture_study_cards: number of ARCHITECTURE_STUDY the player has played. It allows them to draw more cards
-    player_location, player_score, player_permanent_daily_routine_cards, player_permanent_architecture_study_cards = [int(j) for j in input().split()]
-    other_player_location, other_player_score, other_player_permanent_daily_routine_cards, other_player_permanent_architecture_study_cards = [int(j) for j in input().split()]
+def retrieve_cards():
     card_locations_count = int(input())
+    cards = []
     for i in range(card_locations_count):
         # cards_location: the location of the card list. It can be HAND, DRAW, DISCARD or OPPONENT_CARDS (AUTOMATED and OPPONENT_AUTOMATED will appear in later leagues)
-        cards_location, training_cards_count, coding_cards_count, daily_routine_cards_count, task_prioritization_cards_count, architecture_study_cards_count, continuous_delivery_cards_count, code_review_cards_count, refactoring_cards_count, bonus_cards_count, technical_debt_cards_count = input().split()
+        cards_location, training_cards_count, coding_cards_count, daily_routine_cards_count, task_prioritization_cards_count, \
+            architecture_study_cards_count, continuous_delivery_cards_count, code_review_cards_count, refactoring_cards_count, \
+            bonus_cards_count, technical_debt_cards_count = input().split()
         training_cards_count = int(training_cards_count)
         coding_cards_count = int(coding_cards_count)
         daily_routine_cards_count = int(daily_routine_cards_count)
@@ -81,22 +69,39 @@ def run():
         code_review_cards_count = int(code_review_cards_count)
         refactoring_cards_count = int(refactoring_cards_count)
         bonus_cards_count = int(bonus_cards_count)
-        technical_debt_cards_count = int(technical_debt_cards_count)
+        technical_debt_cards_count = int(technical_debt_cards_count)    
+        card = Card(training_cards_count, coding_cards_count, daily_routine_cards_count, task_prioritization_cards_count, \
+            architecture_study_cards_count, continuous_delivery_cards_count, code_review_cards_count, refactoring_cards_count, \
+            bonus_cards_count, technical_debt_cards_count)
+        cards.append(card)
+def retrieve_players():
+    location, score, permanent_daily_routine_cards, permanent_architecture_study_cards = [int(j) for j in input().split()]
+    my_player = Player(location, score, permanent_daily_routine_cards, permanent_architecture_study_cards)
+
+    location, score, permanent_daily_routine_cards, permanent_architecture_study_cards = [int(j) for j in input().split()]
+    other_player = Player(location, score, permanent_daily_routine_cards, permanent_architecture_study_cards)
+    return my_player, other_player
+def retrieve_possible_moves():
     possible_moves_count = int(input())
     possible_moves = []
     for i in range(possible_moves_count):
         possible_move = input()
         possible_moves.append(possible_move)
-    print(", ".join(possible_moves), file=sys.stderr)
+    return possible_moves
+def run():
+    game_phase = input()  # can be MOVE, GIVE_CARD, THROW_CARD, PLAY_CARD or RELEASE
+    applications = retrieve_applications()
+    my_player, other_player = retrieve_players()
+    cards = retrieve_cards()
+    possible_moves = retrieve_possible_moves()
 
-    # Write an action using print
-    # To debug: print("Debug messages...", file=sys.stderr)
+    print(f'possible_moves={possible_moves}', file=sys.stderr)
 
     # In the first league: RANDOM | MOVE <zoneId> | RELEASE <applicationId> | WAIT; In later leagues: | GIVE <cardType> | THROW <cardType> | TRAINING | CODING | DAILY_ROUTINE | TASK_PRIORITIZATION <cardTypeToThrow> <cardTypeToTake> | ARCHITECTURE_STUDY | CONTINUOUS_DELIVERY <cardTypeToAutomate> | CODE_REVIEW | REFACTORING;
     if game_phase == "MOVE":
         # Write your code here to move your player
         # You must move from your desk
-        print(f'MOVE {(player_location + 1) % 8}')
+        print(f'MOVE {(my_player.location + 1) % 8}')
     elif game_phase == "GIVE_CARD":
         # Starting from league 2, you must give a card to the opponent if you move close to them.
         # Write your code here to give a card
@@ -123,4 +128,3 @@ def run():
 while True:
     run()
 
-display_applications()
