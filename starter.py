@@ -1,7 +1,6 @@
-import sys, math
+import sys, math, os
 from collections import namedtuple
 from enum import Enum
-
 
 class CardType(Enum):
     TRAINING = 0
@@ -15,14 +14,10 @@ class CardType(Enum):
     BONUS = 8
     TECHNICAL_DEBT = 9
 
-# Complete the hackathon before your opponent by following the principles of Green IT
-
-
 Application = namedtuple('Application', ['id', 'card_needed'])
 
-# game loop
-while True:
-    game_phase = input()  # can be MOVE, GIVE_CARD, THROW_CARD, PLAY_CARD or RELEASE
+# Complete the hackathon before your opponent by following the principles of Green IT
+def retrieve_applications():
     applications_count = int(input())
     applications = []
     for i in range(applications_count):
@@ -36,6 +31,7 @@ while True:
         # refactoring_needed: number of REFACTORING skills needed to release this application
         object_type, _id, training_needed, coding_needed, daily_routine_needed, task_prioritization_needed, architecture_study_needed, continuous_delivery_needed, code_review_needed, refactoring_needed = input().split()
         _id = int(_id)
+        id = _id
         training_needed = int(training_needed)
         coding_needed = int(coding_needed)
         daily_routine_needed = int(daily_routine_needed)
@@ -44,8 +40,28 @@ while True:
         continuous_delivery_needed = int(continuous_delivery_needed)
         code_review_needed = int(code_review_needed)
         refactoring_needed = int(refactoring_needed)
-        application = Application(_id, [training_needed, coding_needed, daily_routine_needed, task_prioritization_needed, architecture_study_needed, continuous_delivery_needed, code_review_needed, refactoring_needed])
+        application = Application(_id, [id, training_needed, coding_needed, daily_routine_needed, task_prioritization_needed, architecture_study_needed, continuous_delivery_needed, code_review_needed, refactoring_needed])
         applications.append(application)
+    return applications
+def export_applications(applications):
+    path = f'applications.txt'
+    print(f'export_applications i   nto {os.path.abspath(path)} ...', file=sys.stderr)
+    # file = open(path, "w");
+    # for a in applications:
+    #     file.write(f'id={a.id}')
+    # file.close()
+def display_applications():
+    path = f'applications.txt'
+    print(f'display_applications from {os.path.abspath(path)} ...', file=sys.stderr)
+    # file = open(path);
+    # for line in file:
+    #     print(line, file=sys.stderr)
+    # file.close()  
+def run():
+    game_phase = input()  # can be MOVE, GIVE_CARD, THROW_CARD, PLAY_CARD or RELEASE
+    applications = retrieve_applications()
+    export_applications(applications)
+
     # for i in range(2):
         # player_location: id of the zone in which the player is located
         # player_permanent_daily_routine_cards: number of DAILY_ROUTINE the player has played. It allows them to take cards from the adjacent zones
@@ -102,3 +118,9 @@ while True:
         print("RANDOM")
     else:
         print("RANDOM")
+
+# game loop
+while True:
+    run()
+
+display_applications()
